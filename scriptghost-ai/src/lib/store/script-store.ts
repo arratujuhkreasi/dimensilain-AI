@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Act, Scene, Screenplay } from "@/lib/types/screenplay";
+import { nanoid } from "nanoid";
+import type { Character } from "@/lib/types/project";
+import type {
+  Act,
+  Scene,
+  SceneComment,
+  SceneRevisionStatus,
+  Screenplay,
+} from "@/lib/types/screenplay";
 import type { AgentName } from "@/lib/types/agents";
 
 interface ScriptStore {
@@ -12,10 +20,21 @@ interface ScriptStore {
 
   setScreenplay: (screenplay: Screenplay) => void;
   setOutline: (acts: Act[]) => void;
+  updateCharacterProfile: (characterId: string, data: Partial<Character>) => void;
   updateScene: (sceneId: string, data: Partial<Scene>) => void;
   updateSceneElement: (sceneId: string, elementIndex: number, content: string) => void;
+  setSceneRevisionStatus: (sceneId: string, status: SceneRevisionStatus) => void;
+  addSceneComment: (sceneId: string, body: string, author?: string) => void;
+  updateSceneComment: (sceneId: string, commentId: string, body: string) => void;
+  setSceneProductionNote: (sceneId: string, note: string) => void;
+  setSceneShotIntent: (sceneId: string, intent: string) => void;
+  setSceneRewriteNote: (sceneId: string, note: string) => void;
+  applyRewriteNote: (sceneId: string) => void;
   replaceAllText: (findText: string, replaceText: string, caseSensitive?: boolean) => number;
   setRevisionNotes: (notes: string) => void;
+  setProductionNotes: (notes: string) => void;
+  saveVersion: (label: string) => void;
+  restoreVersion: (versionId: string) => void;
   setStatus: (status: Screenplay["status"]) => void;
   setCurrentAgent: (agent: AgentName) => void;
   setIsGenerating: (generating: boolean) => void;
@@ -34,12 +53,36 @@ export const useScriptStore = create<ScriptStore>()(
       generationProgress: { completed: 0, total: 0 },
       streamingContent: "",
 
-      setScreenplay: (screenplay) => set({ screenplay }),
+      setScreenplay: (screenplay) =>
+        set({
+          screenplay: {
+            ...screenplay,
+            acts: normalizeActs(screenplay.acts),
+            versions: screenplay.versions || [],
+          },
+        }),
 
       setOutline: (acts) =>
         set((s) => {
           if (!s.screenplay) return s;
-          return { screenplay: { ...s.screenplay, acts, status: "generating" } };
+          return { screenplay: { ...s.screenplay, acts: normalizeActs(acts), status: "generating" } };
+        }),
+
+      updateCharacterProfile: (characterId, data) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              projectConfig: {
+                ...s.screenplay.projectConfig,
+                characters: s.screenplay.projectConfig.characters.map((character) =>
+                  character.id === characterId ? { ...character, ...data } : character
+                ),
+              },
+            },
+          };
         }),
 
       updateScene: (sceneId, data) =>
@@ -48,7 +91,7 @@ export const useScriptStore = create<ScriptStore>()(
           const acts = s.screenplay.acts.map((act) => ({
             ...act,
             scenes: act.scenes.map((scene) =>
-              scene.id === sceneId ? { ...scene, ...data } : scene
+              scene.id === sceneId ? normalizeScene({ ...scene, ...data }) : scene
             ),
           }));
           const allScenes = acts.flatMap((act) => act.scenes);
@@ -78,6 +121,144 @@ export const useScriptStore = create<ScriptStore>()(
           }));
 
           return { screenplay: { ...s.screenplay, acts } };
+        }),
+
+      setSceneRevisionStatus: (sceneId, revisionStatus) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                ...scene,
+                revisionStatus,
+              })),
+            },
+          };
+        }),
+
+      addSceneComment: (sceneId, body, author = "Director") =>
+        set((s) => {
+          if (!s.screenplay || !body.trim()) return s;
+
+          const comment: SceneComment = {
+            id: nanoid(),
+            author,
+            body: body.trim(),
+            createdAt: new Date().toISOString(),
+          };
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                ...scene,
+                comments: [...(scene.comments || []), comment],
+              })),
+            },
+          };
+        }),
+
+      updateSceneComment: (sceneId, commentId, body) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                ...scene,
+                comments: (scene.comments || []).map((comment) =>
+                  comment.id === commentId ? { ...comment, body } : comment
+                ),
+              })),
+            },
+          };
+        }),
+
+      setSceneProductionNote: (sceneId, productionNote) =>
+        set((s) =>
+          s.screenplay
+            ? {
+                screenplay: {
+                  ...s.screenplay,
+                  acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                    ...scene,
+                    productionNote,
+                  })),
+                },
+              }
+            : s
+        ),
+
+      setSceneShotIntent: (sceneId, shotIntent) =>
+        set((s) =>
+          s.screenplay
+            ? {
+                screenplay: {
+                  ...s.screenplay,
+                  acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                    ...scene,
+                    shotIntent,
+                  })),
+                },
+              }
+            : s
+        ),
+
+      setSceneRewriteNote: (sceneId, rewriteNote) =>
+        set((s) =>
+          s.screenplay
+            ? {
+                screenplay: {
+                  ...s.screenplay,
+                  acts: mapScene(s.screenplay.acts, sceneId, (scene) => ({
+                    ...scene,
+                    rewriteNote,
+                  })),
+                },
+              }
+            : s
+        ),
+
+      applyRewriteNote: (sceneId) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              acts: mapScene(s.screenplay.acts, sceneId, (scene) => {
+                const note = scene.rewriteNote?.trim();
+                if (!note) return scene;
+
+                const elements =
+                  scene.elements.length > 0
+                    ? scene.elements.map((element) =>
+                        element.type === "action"
+                          ? {
+                              ...element,
+                              content: `${element.content}\n\nREVISION PASS: ${note}`,
+                            }
+                          : element
+                      )
+                    : [
+                        {
+                          type: "action" as const,
+                          content: `REVISION PASS: ${note}`,
+                        },
+                      ];
+
+                return {
+                  ...scene,
+                  elements,
+                  summary: `${scene.summary}\nRevision note: ${note}`,
+                  revisionStatus: "needs-revision",
+                };
+              }),
+            },
+          };
         }),
 
       replaceAllText: (findText, replaceText, caseSensitive = false) => {
@@ -122,6 +303,15 @@ export const useScriptStore = create<ScriptStore>()(
               ...scene,
               heading: replaceValue(scene.heading),
               summary: replaceValue(scene.summary),
+              productionNote: scene.productionNote
+                ? replaceValue(scene.productionNote)
+                : scene.productionNote,
+              shotIntent: scene.shotIntent ? replaceValue(scene.shotIntent) : scene.shotIntent,
+              rewriteNote: scene.rewriteNote ? replaceValue(scene.rewriteNote) : scene.rewriteNote,
+              comments: (scene.comments || []).map((comment) => ({
+                ...comment,
+                body: replaceValue(comment.body),
+              })),
               elements: scene.elements.map((element) => ({
                 ...element,
                 content: replaceValue(element.content),
@@ -137,6 +327,9 @@ export const useScriptStore = create<ScriptStore>()(
               revisionNotes: s.screenplay.revisionNotes
                 ? replaceValue(s.screenplay.revisionNotes)
                 : s.screenplay.revisionNotes,
+              productionNotes: s.screenplay.productionNotes
+                ? replaceValue(s.screenplay.productionNotes)
+                : s.screenplay.productionNotes,
             },
           };
         });
@@ -148,6 +341,47 @@ export const useScriptStore = create<ScriptStore>()(
         set((s) => ({
           screenplay: s.screenplay ? { ...s.screenplay, revisionNotes } : null,
         })),
+
+      setProductionNotes: (productionNotes) =>
+        set((s) => ({
+          screenplay: s.screenplay ? { ...s.screenplay, productionNotes } : null,
+        })),
+
+      saveVersion: (label) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              versions: [
+                ...(s.screenplay.versions || []),
+                {
+                  id: nanoid(),
+                  label: label.trim() || `Draft ${(s.screenplay.versions || []).length + 1}`,
+                  createdAt: new Date().toISOString(),
+                  acts: s.screenplay.acts,
+                  revisionNotes: s.screenplay.revisionNotes,
+                },
+              ],
+            },
+          };
+        }),
+
+      restoreVersion: (versionId) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+          const version = (s.screenplay.versions || []).find((item) => item.id === versionId);
+          if (!version) return s;
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              acts: normalizeActs(version.acts),
+              revisionNotes: version.revisionNotes,
+            },
+          };
+        }),
 
       setStatus: (status) =>
         set((s) => ({
@@ -182,4 +416,26 @@ export const useScriptStore = create<ScriptStore>()(
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function mapScene(acts: Act[], sceneId: string, updater: (scene: Scene) => Scene): Act[] {
+  return acts.map((act) => ({
+    ...act,
+    scenes: act.scenes.map((scene) => (scene.id === sceneId ? normalizeScene(updater(scene)) : scene)),
+  }));
+}
+
+function normalizeActs(acts: Act[]) {
+  return acts.map((act) => ({
+    ...act,
+    scenes: act.scenes.map(normalizeScene),
+  }));
+}
+
+function normalizeScene(scene: Scene): Scene {
+  return {
+    ...scene,
+    revisionStatus: scene.revisionStatus || "draft",
+    comments: scene.comments || [],
+  };
 }

@@ -11,6 +11,15 @@ export interface SceneElement {
   content: string;
 }
 
+export type SceneRevisionStatus = "draft" | "reviewed" | "needs-revision" | "approved";
+
+export interface SceneComment {
+  id: string;
+  author: string;
+  body: string;
+  createdAt: string;
+}
+
 export interface Scene {
   id: string;
   actNumber: number;
@@ -19,12 +28,25 @@ export interface Scene {
   summary: string;
   elements: SceneElement[];
   status: "pending" | "generating" | "complete" | "error";
+  revisionStatus?: SceneRevisionStatus;
+  comments?: SceneComment[];
+  productionNote?: string;
+  shotIntent?: string;
+  rewriteNote?: string;
 }
 
 export interface Act {
   actNumber: number;
   title: string;
   scenes: Scene[];
+}
+
+export interface ScreenplayVersion {
+  id: string;
+  label: string;
+  createdAt: string;
+  acts: Act[];
+  revisionNotes?: string;
 }
 
 export interface Screenplay {
@@ -34,4 +56,6 @@ export interface Screenplay {
   createdAt: string;
   status: "outline" | "generating" | "complete";
   revisionNotes?: string;
+  productionNotes?: string;
+  versions?: ScreenplayVersion[];
 }

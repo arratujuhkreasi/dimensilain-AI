@@ -4,17 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import { useScriptStore } from "@/lib/store/script-store";
 import { useGenerationStream } from "@/hooks/use-generation-stream";
 import { ScreenplayViewer } from "@/components/screenplay/screenplay-viewer";
-import { RevisionTools } from "@/components/screenplay/revision-tools";
+import { ProductionWorkspace } from "@/components/screenplay/production-workspace";
 import { GenerationPanel } from "@/components/generation/generation-panel";
 import { Button } from "@/components/ui/button";
-import { Download, Eye, Ghost, Pencil, Play, Square } from "lucide-react";
+import { BookOpen, Clapperboard, Download, Ghost, Pencil, Play, Square } from "lucide-react";
 import Link from "next/link";
+
+type WorkMode = "read" | "direct" | "edit";
 
 export default function ScriptPage() {
   const { screenplay, isGenerating } = useScriptStore();
   const { generateFull, abort } = useGenerationStream();
   const didAutoStart = useRef(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [workMode, setWorkMode] = useState<WorkMode>("read");
+  const isEditing = workMode === "edit";
 
   const handleGenerate = () => {
     if (screenplay?.projectConfig) {
@@ -91,18 +94,32 @@ export default function ScriptPage() {
           ) : (
             <>
               {screenplay.acts.length > 0 && (
-                <Button
-                  variant={isEditing ? "secondary" : "outline"}
-                  size="sm"
-                  onClick={() => setIsEditing((value) => !value)}
-                >
-                  {isEditing ? (
-                    <Eye className="h-3 w-3 mr-1" />
-                  ) : (
+                <div className="flex rounded-md border border-border bg-card p-1">
+                  <Button
+                    variant={workMode === "read" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setWorkMode("read")}
+                  >
+                    <BookOpen className="h-3 w-3 mr-1" />
+                    Reading
+                  </Button>
+                  <Button
+                    variant={workMode === "direct" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setWorkMode("direct")}
+                  >
+                    <Clapperboard className="h-3 w-3 mr-1" />
+                    Directing
+                  </Button>
+                  <Button
+                    variant={workMode === "edit" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setWorkMode("edit")}
+                  >
                     <Pencil className="h-3 w-3 mr-1" />
-                  )}
-                  {isEditing ? "Preview" : "Edit"}
-                </Button>
+                    Editing
+                  </Button>
+                </div>
               )}
               <Button
                 size="sm"
@@ -133,11 +150,18 @@ export default function ScriptPage() {
       <div className="flex-1 flex">
         <aside className="w-80 border-r border-border p-4 space-y-4 hidden lg:block">
           <GenerationPanel />
-          <RevisionTools idPrefix="desktop-revision" />
+          <ProductionWorkspace
+            mode={workMode}
+            onModeChange={setWorkMode}
+            idPrefix="desktop-production"
+          />
 
           {screenplay && screenplay.acts.length > 0 && (
             <div className="space-y-2">
               <h3 className="text-sm font-semibold text-muted-foreground">Outline</h3>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Peta act dan scene untuk melompat cepat membaca struktur cerita.
+              </p>
               {screenplay.acts.map((act) => (
                 <div key={act.actNumber} className="space-y-1">
                   <p className="text-xs font-medium text-blood">
@@ -164,7 +188,11 @@ export default function ScriptPage() {
         <div className="flex-1 p-4 overflow-auto sm:p-6">
           <div className="mb-4 space-y-4 lg:hidden">
             <GenerationPanel />
-            <RevisionTools idPrefix="mobile-revision" />
+            <ProductionWorkspace
+              mode={workMode}
+              onModeChange={setWorkMode}
+              idPrefix="mobile-production"
+            />
           </div>
           <ScreenplayViewer isEditing={isEditing} />
         </div>
