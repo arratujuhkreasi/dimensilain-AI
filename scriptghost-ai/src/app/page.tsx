@@ -6,9 +6,11 @@ export default function HomePage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-4">
       <div className="max-w-2xl text-center space-y-8">
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Ghost className="h-12 w-12 text-blood" />
-          <h1 className="text-4xl font-bold tracking-tight">ScriptGhost AI</h1>
+          <h1 className="max-w-xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+            DIMENSI LAIN SCRIPT PRODUCTION
+          </h1>
         </div>
 
         <p className="text-lg text-muted-foreground">

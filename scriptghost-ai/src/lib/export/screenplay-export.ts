@@ -15,7 +15,7 @@ export function serializeScreenplayText(screenplay: Screenplay) {
 
   lines.push(screenplay.projectConfig.title.toUpperCase());
   lines.push("");
-  lines.push("Written by ScriptGhost AI");
+  lines.push("Written by DIMENSI LAIN SCRIPT PRODUCTION");
   lines.push(`Genre: ${screenplay.projectConfig.subGenre}`);
   lines.push("");
   lines.push("---");
@@ -55,7 +55,7 @@ ${paragraphs}
     <Content>
 ${xmlParagraph("Title", screenplay.projectConfig.title.toUpperCase())}
 ${xmlParagraph("Credit", "Written by")}
-${xmlParagraph("Author", "ScriptGhost AI")}
+${xmlParagraph("Author", "DIMENSI LAIN SCRIPT PRODUCTION")}
     </Content>
   </TitlePage>
 </FinalDraft>`;

@@ -8,7 +8,7 @@ export default function NewProjectPage() {
       <div className="mb-8 text-center">
         <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
           <Ghost className="h-5 w-5 text-blood" />
-          <span className="font-semibold">ScriptGhost AI</span>
+          <span className="font-semibold">DIMENSI LAIN SCRIPT PRODUCTION</span>
         </Link>
       </div>
       <OnboardingWizard />

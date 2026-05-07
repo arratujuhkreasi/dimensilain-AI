@@ -82,16 +82,16 @@ function ScreenplayPdf({ screenplay }: { screenplay: Screenplay }) {
   return (
     <Document
       title={screenplay.projectConfig.title}
-      author="ScriptGhost AI"
+      author="DIMENSI LAIN SCRIPT PRODUCTION"
       subject={`Horror screenplay - ${screenplay.projectConfig.subGenre}`}
-      creator="ScriptGhost AI"
+      creator="DIMENSI LAIN SCRIPT PRODUCTION"
       language="id"
     >
       <Page size="A4" style={styles.titlePage}>
         <View style={styles.titleWrap}>
           <Text style={styles.title}>{screenplay.projectConfig.title}</Text>
           <Text style={styles.credit}>Written by</Text>
-          <Text>ScriptGhost AI</Text>
+          <Text>DIMENSI LAIN SCRIPT PRODUCTION</Text>
           <Text style={styles.meta}>
             {screenplay.projectConfig.subGenre} / {screenplay.projectConfig.duration} menit
           </Text>

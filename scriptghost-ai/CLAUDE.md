@@ -14,7 +14,7 @@ npm run lint     # ESLint
 
 ## Architecture
 
-ScriptGhost AI — full-stack Next.js 14+ app for automated horror scriptwriting using multi-agent AI pipeline.
+DIMENSI LAIN SCRIPT PRODUCTION — full-stack Next.js 14+ app for automated horror scriptwriting using multi-agent AI pipeline.
 
 ### Tech Stack
 - Next.js 14+ (App Router), Shadcn UI, Tailwind CSS v4, Zustand, Zod
