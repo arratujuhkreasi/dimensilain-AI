@@ -1,0 +1,42 @@
+import Link from "next/link";
+import { Ghost, Clapperboard, Sparkles, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export default function HomePage() {
+  return (
+    <main className="flex-1 flex flex-col items-center justify-center px-4">
+      <div className="max-w-2xl text-center space-y-8">
+        <div className="flex items-center justify-center gap-3">
+          <Ghost className="h-12 w-12 text-blood" />
+          <h1 className="text-4xl font-bold tracking-tight">ScriptGhost AI</h1>
+        </div>
+
+        <p className="text-lg text-muted-foreground">
+          Professional Horror Script Architect untuk tim produksi{" "}
+          <span className="text-amber-accent font-semibold">Dimensi Lain</span>
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
+            <Clapperboard className="h-6 w-6 text-blood" />
+            <span>Multi-Agent AI Pipeline</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
+            <Sparkles className="h-6 w-6 text-amber-accent" />
+            <span>Naskah 15-90 Menit</span>
+          </div>
+          <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
+            <FileText className="h-6 w-6 text-blood" />
+            <span>Format Screenplay Standar</span>
+          </div>
+        </div>
+
+        <Link href="/project/new">
+          <Button size="lg" className="bg-blood hover:bg-blood/90 text-blood-foreground mt-4">
+            Mulai Proyek Baru
+          </Button>
+        </Link>
+      </div>
+    </main>
+  );
+}

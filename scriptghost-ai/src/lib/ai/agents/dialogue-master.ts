@@ -1,0 +1,56 @@
+import { getLlm } from "../cerebras-client";
+import { dialoguePrompt } from "../prompts/dialogue-prompt";
+import type { ProjectConfig } from "@/lib/types/project";
+import type { Scene } from "@/lib/types/screenplay";
+
+interface DialogueInput {
+  projectConfig: ProjectConfig;
+  scene: Scene;
+  researchContext: string;
+  previousSceneSummary: string;
+}
+
+export async function runDialogueMaster(input: DialogueInput): Promise<string> {
+  const { projectConfig, scene, researchContext, previousSceneSummary } = input;
+
+  const characterList = projectConfig.characters
+    .map((c) => `- ${c.name} (${c.role}): ${c.physicalDescription}. Kelemahan: ${c.weakness}`)
+    .join("\n");
+
+  const chain = dialoguePrompt.pipe(getLlm());
+
+  const result = await chain.invoke({
+    jumpScareDensity: projectConfig.jumpScareDensity,
+    sceneHeading: scene.heading,
+    sceneSummary: scene.summary,
+    researchContext,
+    characterList,
+    previousSceneSummary: previousSceneSummary || "Ini adalah scene pertama.",
+  });
+
+  return typeof result.content === "string" ? result.content : "";
+}
+
+export async function* streamDialogueMaster(input: DialogueInput): AsyncGenerator<string> {
+  const { projectConfig, scene, researchContext, previousSceneSummary } = input;
+
+  const characterList = projectConfig.characters
+    .map((c) => `- ${c.name} (${c.role}): ${c.physicalDescription}. Kelemahan: ${c.weakness}`)
+    .join("\n");
+
+  const chain = dialoguePrompt.pipe(getLlm());
+
+  const stream = await chain.stream({
+    jumpScareDensity: projectConfig.jumpScareDensity,
+    sceneHeading: scene.heading,
+    sceneSummary: scene.summary,
+    researchContext,
+    characterList,
+    previousSceneSummary: previousSceneSummary || "Ini adalah scene pertama.",
+  });
+
+  for await (const chunk of stream) {
+    const content = typeof chunk.content === "string" ? chunk.content : "";
+    if (content) yield content;
+  }
+}

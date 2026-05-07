@@ -1,0 +1,73 @@
+"use client";
+
+import { useProjectStore } from "@/lib/store/project-store";
+import { StepTitle } from "./step-title";
+import { StepGenre } from "./step-genre";
+import { StepCharacters } from "./step-characters";
+import { StepSetting } from "./step-setting";
+import { StepDuration } from "./step-duration";
+import { StepIntensity } from "./step-intensity";
+import { StepConstraints } from "./step-constraints";
+import { StepReview } from "./step-review";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const STEPS = [
+  { label: "Judul", component: StepTitle },
+  { label: "Genre", component: StepGenre },
+  { label: "Karakter", component: StepCharacters },
+  { label: "Setting", component: StepSetting },
+  { label: "Durasi", component: StepDuration },
+  { label: "Intensitas", component: StepIntensity },
+  { label: "Produksi", component: StepConstraints },
+  { label: "Review", component: StepReview },
+];
+
+export function OnboardingWizard() {
+  const { currentStep, nextStep, prevStep } = useProjectStore();
+  const StepComponent = STEPS[currentStep].component;
+
+  return (
+    <div className="w-full max-w-2xl mx-auto space-y-8">
+      <div className="flex items-center gap-2">
+        {STEPS.map((step, i) => (
+          <div key={step.label} className="flex items-center gap-2">
+            <div
+              className={`h-2 flex-1 rounded-full transition-colors ${
+                i <= currentStep ? "bg-blood" : "bg-muted"
+              }`}
+              style={{ width: `${100 / STEPS.length}%` }}
+            />
+          </div>
+        ))}
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Langkah {currentStep + 1} dari {STEPS.length} —{" "}
+        <span className="text-foreground">{STEPS[currentStep].label}</span>
+      </p>
+
+      <div className="min-h-[400px]">
+        <StepComponent />
+      </div>
+
+      <div className="flex justify-between">
+        <Button
+          variant="ghost"
+          onClick={prevStep}
+          disabled={currentStep === 0}
+        >
+          <ChevronLeft className="h-4 w-4 mr-1" />
+          Kembali
+        </Button>
+
+        {currentStep < STEPS.length - 1 && (
+          <Button onClick={nextStep} className="bg-blood hover:bg-blood/90 text-blood-foreground">
+            Lanjut
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
