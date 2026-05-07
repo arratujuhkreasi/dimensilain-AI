@@ -1,15 +1,19 @@
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAICompletions } from "@langchain/openai";
 
-let llm: ChatOpenAI | null = null;
-let llmStructured: ChatOpenAI | null = null;
+let llm: ChatOpenAICompletions | null = null;
+let llmStructured: ChatOpenAICompletions | null = null;
 
 export function getLlm() {
   if (!llm) {
-    llm = new ChatOpenAI({
-      modelName: process.env.CEREBRAS_MODEL || "llama-3.1-70b",
-      openAIApiKey: process.env.CEREBRAS_API_KEY,
+    const config = getCerebrasConfig();
+
+    llm = new ChatOpenAICompletions({
+      model: config.model,
+      modelName: config.model,
+      apiKey: config.apiKey,
+      openAIApiKey: config.apiKey,
       configuration: {
-        baseURL: process.env.CEREBRAS_BASE_URL || "https://api.cerebras.ai/v1",
+        baseURL: config.baseURL,
       },
       temperature: 0.8,
       maxTokens: 4096,
@@ -22,16 +26,36 @@ export function getLlm() {
 
 export function getLlmStructured() {
   if (!llmStructured) {
-    llmStructured = new ChatOpenAI({
-      modelName: process.env.CEREBRAS_MODEL || "llama-3.1-70b",
-      openAIApiKey: process.env.CEREBRAS_API_KEY,
+    const config = getCerebrasConfig();
+
+    llmStructured = new ChatOpenAICompletions({
+      model: config.model,
+      modelName: config.model,
+      apiKey: config.apiKey,
+      openAIApiKey: config.apiKey,
       configuration: {
-        baseURL: process.env.CEREBRAS_BASE_URL || "https://api.cerebras.ai/v1",
+        baseURL: config.baseURL,
       },
       temperature: 0.6,
-      maxTokens: 8192,
+      maxTokens: 4096,
     });
   }
 
   return llmStructured;
+}
+
+function getCerebrasConfig() {
+  const apiKey = process.env.CEREBRAS_API_KEY?.trim();
+
+  if (!apiKey) {
+    throw new Error(
+      "CEREBRAS_API_KEY belum terpasang. Isi environment variable Cerebras di Vercel dan restart deployment."
+    );
+  }
+
+  return {
+    apiKey,
+    baseURL: process.env.CEREBRAS_BASE_URL?.trim() || "https://api.cerebras.ai/v1",
+    model: process.env.CEREBRAS_MODEL?.trim() || "llama3.1-8b",
+  };
 }

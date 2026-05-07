@@ -31,14 +31,7 @@ export async function runArchitect(projectConfig: ProjectConfig): Promise<Act[]>
   });
 
   const content = typeof result.content === "string" ? result.content : "";
-  const jsonMatch = content.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) {
-    throw new Error("Architect agent did not return valid JSON");
-  }
-
-  const parsed = JSON.parse(jsonMatch[0]) as {
-    acts: { actNumber: number; title: string; scenes: { sceneNumber: number; heading: string; summary: string }[] }[];
-  };
+  const parsed = parseArchitectJson(content) ?? createFallbackOutline(projectConfig);
 
   return parsed.acts.map((act) => ({
     actNumber: act.actNumber,
@@ -53,4 +46,97 @@ export async function runArchitect(projectConfig: ProjectConfig): Promise<Act[]>
       status: "pending" as const,
     })),
   }));
+}
+
+function parseArchitectJson(content: string):
+  | {
+      acts: {
+        actNumber: number;
+        title: string;
+        scenes: { sceneNumber: number; heading: string; summary: string }[];
+      }[];
+    }
+  | null {
+  const cleaned = content
+    .trim()
+    .replace(/^```(?:json)?/i, "")
+    .replace(/```$/i, "")
+    .trim();
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+
+  if (!jsonMatch) return null;
+
+  try {
+    const parsed = JSON.parse(jsonMatch[0]) as {
+      acts?: {
+        actNumber?: number;
+        title?: string;
+        scenes?: { sceneNumber?: number; heading?: string; summary?: string }[];
+      }[];
+    };
+
+    if (!Array.isArray(parsed.acts)) return null;
+
+    return {
+      acts: parsed.acts.map((act, actIndex) => ({
+        actNumber: Number(act.actNumber) || actIndex + 1,
+        title: act.title || `Act ${actIndex + 1}`,
+        scenes: Array.isArray(act.scenes)
+          ? act.scenes.map((scene, sceneIndex) => ({
+              sceneNumber: Number(scene.sceneNumber) || sceneIndex + 1,
+              heading: scene.heading || "INT. LOKASI UTAMA - MALAM",
+              summary: scene.summary || "Ketegangan meningkat dan misteri semakin jelas.",
+            }))
+          : [],
+      })),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function createFallbackOutline(projectConfig: ProjectConfig) {
+  const durConfig = DURATION_CONFIG[projectConfig.duration];
+  const actTitles =
+    durConfig.acts === 3
+      ? ["Pengenalan Teror", "Konfrontasi", "Puncak Kengerian"]
+      : ["Pemicu", "Penyelidikan", "Pengungkapan", "Kejaran", "Konfrontasi Akhir"];
+
+  return {
+    acts: Array.from({ length: durConfig.acts }, (_, actIndex) => ({
+      actNumber: actIndex + 1,
+      title: actTitles[actIndex] || `Act ${actIndex + 1}`,
+      scenes: Array.from({ length: durConfig.scenesPerAct }, (_, sceneIndex) => ({
+        sceneNumber: sceneIndex + 1,
+        heading: buildFallbackHeading(projectConfig.setting, actIndex, sceneIndex),
+        summary: buildFallbackSummary(projectConfig, actIndex, sceneIndex, durConfig.acts),
+      })),
+    })),
+  };
+}
+
+function buildFallbackHeading(setting: string, actIndex: number, sceneIndex: number) {
+  const time = actIndex === 0 && sceneIndex === 0 ? "SORE" : "MALAM";
+  return `INT. ${setting || "LOKASI UTAMA"} - ${time}`.toUpperCase();
+}
+
+function buildFallbackSummary(
+  projectConfig: ProjectConfig,
+  actIndex: number,
+  sceneIndex: number,
+  actCount: number
+) {
+  const mainCharacter = projectConfig.characters[0]?.name || "karakter utama";
+  const isOpening = actIndex === 0 && sceneIndex === 0;
+  const isFinal = actIndex === actCount - 1;
+
+  if (isOpening) {
+    return `${mainCharacter} tiba di ${projectConfig.setting} dan menemukan tanda pertama dari teror yang berhubungan dengan logline: ${projectConfig.logline}`;
+  }
+
+  if (isFinal) {
+    return `${mainCharacter} menghadapi sumber gangguan supernatural, memanfaatkan kelemahan karakter sebagai konflik emosional utama.`;
+  }
+
+  return `Misteri di ${projectConfig.setting} berkembang, petunjuk baru muncul, dan tekanan horor meningkat sesuai sub-genre ${projectConfig.subGenre}.`;
 }
