@@ -13,6 +13,9 @@ interface ScriptStore {
   setScreenplay: (screenplay: Screenplay) => void;
   setOutline: (acts: Act[]) => void;
   updateScene: (sceneId: string, data: Partial<Scene>) => void;
+  updateSceneElement: (sceneId: string, elementIndex: number, content: string) => void;
+  replaceAllText: (findText: string, replaceText: string, caseSensitive?: boolean) => number;
+  setRevisionNotes: (notes: string) => void;
   setStatus: (status: Screenplay["status"]) => void;
   setCurrentAgent: (agent: AgentName) => void;
   setIsGenerating: (generating: boolean) => void;
@@ -56,6 +59,96 @@ export const useScriptStore = create<ScriptStore>()(
           return { screenplay: { ...s.screenplay, acts, status } };
         }),
 
+      updateSceneElement: (sceneId, elementIndex, content) =>
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          const acts = s.screenplay.acts.map((act) => ({
+            ...act,
+            scenes: act.scenes.map((scene) => {
+              if (scene.id !== sceneId) return scene;
+
+              return {
+                ...scene,
+                elements: scene.elements.map((element, index) =>
+                  index === elementIndex ? { ...element, content } : element
+                ),
+              };
+            }),
+          }));
+
+          return { screenplay: { ...s.screenplay, acts } };
+        }),
+
+      replaceAllText: (findText, replaceText, caseSensitive = false) => {
+        let replacementCount = 0;
+        const needle = findText.trim();
+
+        if (!needle) return 0;
+
+        set((s) => {
+          if (!s.screenplay) return s;
+
+          const replaceValue = (value: string) => {
+            const flags = caseSensitive ? "g" : "gi";
+            const pattern = new RegExp(escapeRegExp(needle), flags);
+            const matches = value.match(pattern);
+            if (matches) replacementCount += matches.length;
+            return value.replace(pattern, replaceText);
+          };
+
+          const projectConfig = {
+            ...s.screenplay.projectConfig,
+            title: replaceValue(s.screenplay.projectConfig.title),
+            logline: replaceValue(s.screenplay.projectConfig.logline),
+            setting: replaceValue(s.screenplay.projectConfig.setting),
+            settingDetails: replaceValue(s.screenplay.projectConfig.settingDetails),
+            characters: s.screenplay.projectConfig.characters.map((character) => ({
+              ...character,
+              name: replaceValue(character.name),
+              physicalDescription: replaceValue(character.physicalDescription),
+              weakness: replaceValue(character.weakness),
+            })),
+            constraints: {
+              ...s.screenplay.projectConfig.constraints,
+              additionalNotes: replaceValue(s.screenplay.projectConfig.constraints.additionalNotes),
+            },
+          };
+
+          const acts = s.screenplay.acts.map((act) => ({
+            ...act,
+            title: replaceValue(act.title),
+            scenes: act.scenes.map((scene) => ({
+              ...scene,
+              heading: replaceValue(scene.heading),
+              summary: replaceValue(scene.summary),
+              elements: scene.elements.map((element) => ({
+                ...element,
+                content: replaceValue(element.content),
+              })),
+            })),
+          }));
+
+          return {
+            screenplay: {
+              ...s.screenplay,
+              projectConfig,
+              acts,
+              revisionNotes: s.screenplay.revisionNotes
+                ? replaceValue(s.screenplay.revisionNotes)
+                : s.screenplay.revisionNotes,
+            },
+          };
+        });
+
+        return replacementCount;
+      },
+
+      setRevisionNotes: (revisionNotes) =>
+        set((s) => ({
+          screenplay: s.screenplay ? { ...s.screenplay, revisionNotes } : null,
+        })),
+
       setStatus: (status) =>
         set((s) => ({
           screenplay: s.screenplay ? { ...s.screenplay, status } : null,
@@ -86,3 +179,7 @@ export const useScriptStore = create<ScriptStore>()(
     }
   )
 );
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

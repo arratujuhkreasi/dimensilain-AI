@@ -33,4 +33,5 @@ export interface Screenplay {
   acts: Act[];
   createdAt: string;
   status: "outline" | "generating" | "complete";
+  revisionNotes?: string;
 }

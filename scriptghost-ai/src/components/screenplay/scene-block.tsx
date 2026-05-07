@@ -1,6 +1,7 @@
 "use client";
 
 import type { Scene, SceneElement } from "@/lib/types/screenplay";
+import { Textarea } from "@/components/ui/textarea";
 
 function ElementRenderer({ element }: { element: SceneElement }) {
   switch (element.type) {
@@ -27,9 +28,28 @@ function ElementRenderer({ element }: { element: SceneElement }) {
 
 interface SceneBlockProps {
   scene: Scene;
+  isEditing?: boolean;
+  onElementChange?: (elementIndex: number, content: string) => void;
 }
 
-export function SceneBlock({ scene }: SceneBlockProps) {
+function editableClassName(type: SceneElement["type"]) {
+  switch (type) {
+    case "scene-heading":
+      return "font-bold uppercase tracking-wide";
+    case "character-name":
+      return "text-center font-bold uppercase";
+    case "parenthetical":
+      return "text-center italic";
+    case "dialogue":
+      return "mx-auto max-w-[70%] text-center";
+    case "transition":
+      return "text-right font-bold uppercase";
+    default:
+      return "";
+  }
+}
+
+export function SceneBlock({ scene, isEditing = false, onElementChange }: SceneBlockProps) {
   if (scene.elements.length === 0) {
     return (
       <div className="py-4 text-muted-foreground text-sm italic">
@@ -40,9 +60,20 @@ export function SceneBlock({ scene }: SceneBlockProps) {
 
   return (
     <div className="py-4 border-b border-border/50 last:border-0">
-      {scene.elements.map((element, i) => (
-        <ElementRenderer key={i} element={element} />
-      ))}
+      {scene.elements.map((element, index) =>
+        isEditing ? (
+          <Textarea
+            key={index}
+            value={element.content}
+            onChange={(event) => onElementChange?.(index, event.target.value)}
+            className={`mb-3 min-h-10 resize-y border-border/70 bg-background/80 font-screenplay text-sm ${editableClassName(
+              element.type
+            )}`}
+          />
+        ) : (
+          <ElementRenderer key={index} element={element} />
+        )
+      )}
     </div>
   );
 }

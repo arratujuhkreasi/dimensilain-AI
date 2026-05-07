@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScriptStore } from "@/lib/store/script-store";
 import { useGenerationStream } from "@/hooks/use-generation-stream";
 import { ScreenplayViewer } from "@/components/screenplay/screenplay-viewer";
+import { RevisionTools } from "@/components/screenplay/revision-tools";
 import { GenerationPanel } from "@/components/generation/generation-panel";
 import { Button } from "@/components/ui/button";
-import { Ghost, Download, Play, Square } from "lucide-react";
+import { Download, Eye, Ghost, Pencil, Play, Square } from "lucide-react";
 import Link from "next/link";
 
 export default function ScriptPage() {
   const { screenplay, isGenerating } = useScriptStore();
   const { generateFull, abort } = useGenerationStream();
   const didAutoStart = useRef(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleGenerate = () => {
     if (screenplay?.projectConfig) {
@@ -71,7 +73,7 @@ export default function ScriptPage() {
 
   return (
     <main className="flex-1 flex flex-col">
-      <header className="border-b border-border px-6 py-3 flex items-center justify-between">
+      <header className="border-b border-border px-4 py-3 flex flex-col gap-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
         <Link
           href="/"
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -80,7 +82,7 @@ export default function ScriptPage() {
           <span className="font-semibold text-sm">DIMENSI LAIN SCRIPT PRODUCTION</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {isGenerating ? (
             <Button variant="destructive" size="sm" onClick={abort}>
               <Square className="h-3 w-3 mr-1" />
@@ -88,6 +90,20 @@ export default function ScriptPage() {
             </Button>
           ) : (
             <>
+              {screenplay.acts.length > 0 && (
+                <Button
+                  variant={isEditing ? "secondary" : "outline"}
+                  size="sm"
+                  onClick={() => setIsEditing((value) => !value)}
+                >
+                  {isEditing ? (
+                    <Eye className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Pencil className="h-3 w-3 mr-1" />
+                  )}
+                  {isEditing ? "Preview" : "Edit"}
+                </Button>
+              )}
               <Button
                 size="sm"
                 onClick={handleGenerate}
@@ -117,6 +133,7 @@ export default function ScriptPage() {
       <div className="flex-1 flex">
         <aside className="w-80 border-r border-border p-4 space-y-4 hidden lg:block">
           <GenerationPanel />
+          <RevisionTools idPrefix="desktop-revision" />
 
           {screenplay && screenplay.acts.length > 0 && (
             <div className="space-y-2">
@@ -144,8 +161,12 @@ export default function ScriptPage() {
           )}
         </aside>
 
-        <div className="flex-1 p-6 overflow-auto">
-          <ScreenplayViewer />
+        <div className="flex-1 p-4 overflow-auto sm:p-6">
+          <div className="mb-4 space-y-4 lg:hidden">
+            <GenerationPanel />
+            <RevisionTools idPrefix="mobile-revision" />
+          </div>
+          <ScreenplayViewer isEditing={isEditing} />
         </div>
       </div>
     </main>

@@ -5,8 +5,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { SceneBlock } from "./scene-block";
 import { TypewriterText } from "./typewriter-text";
 
-export function ScreenplayViewer() {
-  const { screenplay, streamingContent, isGenerating } = useScriptStore();
+interface ScreenplayViewerProps {
+  isEditing?: boolean;
+}
+
+export function ScreenplayViewer({ isEditing = false }: ScreenplayViewerProps) {
+  const { screenplay, streamingContent, isGenerating, updateSceneElement } = useScriptStore();
 
   if (!screenplay) {
     return (
@@ -34,7 +38,14 @@ export function ScreenplayViewer() {
               ACT {act.actNumber}: {act.title}
             </h2>
             {act.scenes.map((scene) => (
-              <SceneBlock key={scene.id} scene={scene} />
+              <SceneBlock
+                key={scene.id}
+                scene={scene}
+                isEditing={isEditing}
+                onElementChange={(elementIndex, content) =>
+                  updateSceneElement(scene.id, elementIndex, content)
+                }
+              />
             ))}
           </div>
         ))}
