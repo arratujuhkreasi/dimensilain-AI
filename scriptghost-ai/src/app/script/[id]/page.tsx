@@ -6,6 +6,7 @@ import { useGenerationStream } from "@/hooks/use-generation-stream";
 import { ScreenplayViewer } from "@/components/screenplay/screenplay-viewer";
 import { ProductionWorkspace } from "@/components/screenplay/production-workspace";
 import { GenerationPanel } from "@/components/generation/generation-panel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { BookOpen, Clapperboard, Download, Ghost, Pencil, Play, Square } from "lucide-react";
 import Link from "next/link";
@@ -17,7 +18,6 @@ export default function ScriptPage() {
   const { generateFull, abort } = useGenerationStream();
   const didAutoStart = useRef(false);
   const [workMode, setWorkMode] = useState<WorkMode>("read");
-  const isEditing = workMode === "edit";
 
   const handleGenerate = () => {
     if (screenplay?.projectConfig) {
@@ -148,41 +148,45 @@ export default function ScriptPage() {
       </header>
 
       <div className="flex-1 flex">
-        <aside className="w-80 border-r border-border p-4 space-y-4 hidden lg:block">
-          <GenerationPanel />
-          <ProductionWorkspace
-            mode={workMode}
-            onModeChange={setWorkMode}
-            idPrefix="desktop-production"
-          />
+        <aside className="hidden w-80 border-r border-border lg:block">
+          <ScrollArea className="h-[calc(100vh-76px)]">
+            <div className="space-y-4 p-4 pr-3">
+              <GenerationPanel />
+              <ProductionWorkspace
+                mode={workMode}
+                onModeChange={setWorkMode}
+                idPrefix="desktop-production"
+              />
 
-          {screenplay && screenplay.acts.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-muted-foreground">Outline</h3>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Peta act dan scene untuk melompat cepat membaca struktur cerita.
-              </p>
-              {screenplay.acts.map((act) => (
-                <div key={act.actNumber} className="space-y-1">
-                  <p className="text-xs font-medium text-blood">
-                    Act {act.actNumber}: {act.title}
+              {screenplay && screenplay.acts.length > 0 && (
+                <div className="space-y-2 rounded-lg border border-border bg-card p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground">Outline</h3>
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Peta act dan scene untuk melompat cepat membaca struktur cerita.
                   </p>
-                  {act.scenes.map((scene) => (
-                    <p
-                      key={scene.id}
-                      className={`text-xs pl-3 ${
-                        scene.status === "complete"
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {scene.sceneNumber}. {scene.heading}
-                    </p>
+                  {screenplay.acts.map((act) => (
+                    <div key={act.actNumber} className="space-y-1">
+                      <p className="text-xs font-medium text-blood">
+                        Act {act.actNumber}: {act.title}
+                      </p>
+                      {act.scenes.map((scene) => (
+                        <p
+                          key={scene.id}
+                          className={`text-xs pl-3 ${
+                            scene.status === "complete"
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {scene.sceneNumber}. {scene.heading}
+                        </p>
+                      ))}
+                    </div>
                   ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
+          </ScrollArea>
         </aside>
 
         <div className="flex-1 p-4 overflow-auto sm:p-6">
@@ -194,7 +198,7 @@ export default function ScriptPage() {
               idPrefix="mobile-production"
             />
           </div>
-          <ScreenplayViewer isEditing={isEditing} />
+          <ScreenplayViewer mode={workMode} />
         </div>
       </div>
     </main>
