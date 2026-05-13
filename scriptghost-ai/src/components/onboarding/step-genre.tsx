@@ -42,7 +42,7 @@ export function StepGenre() {
       </div>
 
       <section className="space-y-3">
-        <h3 className="text-sm font-semibold text-muted-foreground">Sub-genre</h3>
+        <h3 className="text-sm font-semibold text-muted-foreground">Jenis horor</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {(Object.keys(SUB_GENRE_LABELS) as SubGenre[]).map((genre) => (
             <button
@@ -86,7 +86,7 @@ export function StepGenre() {
         <p className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
           Akan dibuat sekitar{" "}
           <span className="font-medium text-foreground">
-            {selected.acts * selected.scenesPerAct} scene
+            {selected.acts * selected.scenesPerAct} adegan
           </span>
           .
         </p>

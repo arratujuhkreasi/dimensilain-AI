@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid project config", details: parsed.error.flatten() },
+        { error: "Data proyek belum valid", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ outline: acts });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to generate outline" },
+      { error: error instanceof Error ? error.message : "Gagal membuat kerangka cerita" },
       { status: 500 }
     );
   }

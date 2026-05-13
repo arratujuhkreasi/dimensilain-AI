@@ -13,7 +13,7 @@ export function StepSetting() {
       <div>
         <h2 className="text-2xl font-bold">Setting & Lokasi</h2>
         <p className="text-muted-foreground mt-1">
-          Lokasi utama cerita — sesuaikan dengan aset yang dimiliki
+          Lokasi utama cerita - sesuaikan dengan aset yang dimiliki
         </p>
       </div>
 

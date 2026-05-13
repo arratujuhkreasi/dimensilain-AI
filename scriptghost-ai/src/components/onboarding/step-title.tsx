@@ -29,7 +29,7 @@ export function StepTitle() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="logline">Logline</Label>
+          <Label htmlFor="logline">Inti Cerita</Label>
           <Textarea
             id="logline"
             placeholder="Ringkasan 1-2 kalimat. Contoh: Sekelompok mahasiswa terjebak di rumah tua yang menyimpan rahasia ritual lama..."

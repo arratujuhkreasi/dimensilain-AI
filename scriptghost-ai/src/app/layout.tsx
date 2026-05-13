@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DIMENSI LAIN SCRIPT PRODUCTION - Horror Script Architect",
+  title: "DIMENSI LAIN SCRIPT PRODUCTION - Pembuat Naskah Horor",
   description:
     "Platform AI untuk penulisan naskah horor profesional. Dibuat untuk tim produksi Dimensi Lain.",
 };

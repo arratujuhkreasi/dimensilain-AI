@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const parsed = projectConfigSchema.safeParse(body.projectConfig);
 
     if (!parsed.success) {
-      return new Response(JSON.stringify({ error: "Invalid project config" }), {
+      return new Response(JSON.stringify({ error: "Data proyek belum valid" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const previousSceneSummary = (body.previousSceneSummary as string) || "";
 
     if (!scene || !outline) {
-      return new Response(JSON.stringify({ error: "Missing scene or outline" }), {
+      return new Response(JSON.stringify({ error: "Adegan atau kerangka cerita belum tersedia" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
           }
         } catch (error) {
           sendEvent("error", {
-            message: error instanceof Error ? error.message : "Generation failed",
+            message: error instanceof Error ? error.message : "Gagal membuat adegan",
           });
         }
 
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Server error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Terjadi masalah di server" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const screenplay = body.screenplay as Screenplay;
 
     if (!screenplay || !screenplay.acts.length) {
-      return NextResponse.json({ error: "No screenplay data provided" }, { status: 400 });
+      return NextResponse.json({ error: "Data naskah belum tersedia" }, { status: 400 });
     }
 
     const buffer = await createScreenplayPdfBuffer(screenplay);
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Export failed" },
+      { error: error instanceof Error ? error.message : "Gagal mengekspor naskah" },
       { status: 500 }
     );
   }

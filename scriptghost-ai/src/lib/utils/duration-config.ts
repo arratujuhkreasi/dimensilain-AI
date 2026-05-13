@@ -9,12 +9,12 @@ export const DURATION_CONFIG: Record<Duration, { acts: number; scenesPerAct: num
 
 export const SUB_GENRE_LABELS: Record<string, string> = {
   gore: "Gore",
-  supernatural: "Supernatural",
-  psychological: "Psychological",
-  "found-footage": "Found Footage",
-  slasher: "Slasher",
-  "cosmic-horror": "Cosmic Horror",
-  "folk-horror": "Folk Horror",
+  supernatural: "Gaib",
+  psychological: "Psikologis",
+  "found-footage": "Rekaman Temuan",
+  slasher: "Pembunuh Bertopeng",
+  "cosmic-horror": "Horor Kosmik",
+  "folk-horror": "Horor Tradisi",
 };
 
 export const JUMP_SCARE_LABELS: Record<string, string> = {

@@ -13,7 +13,7 @@ const STEPS = [
   { label: "Ide", component: StepTitle },
   { label: "Gaya", component: StepGenre },
   { label: "Karakter", component: StepCharacters },
-  { label: "Review", component: StepReview },
+  { label: "Tinjau", component: StepReview },
 ];
 
 export function OnboardingWizard() {

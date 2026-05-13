@@ -35,10 +35,10 @@ interface ProductionWorkspaceProps {
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  draft: "Draft",
-  reviewed: "Reviewed",
-  "needs-revision": "Needs Revision",
-  approved: "Approved",
+  draft: "Draf",
+  reviewed: "Sudah Dicek",
+  "needs-revision": "Perlu Revisi",
+  approved: "Disetujui",
 };
 
 export function ProductionWorkspace({
@@ -86,14 +86,14 @@ export function ProductionWorkspace({
 
     screenplay.projectConfig.characters.forEach((character) => {
       if (character.name && !fullText.includes(character.name.toLowerCase())) {
-        issues.push(`${character.name} belum muncul di body naskah.`);
+        issues.push(`${character.name} belum muncul di isi naskah.`);
       }
     });
 
     scenes.forEach(({ heading, summary, sceneNumber }) => {
-      if (!heading.trim()) issues.push(`Scene ${sceneNumber} belum punya heading.`);
-      if (!summary.trim()) issues.push(`Scene ${sceneNumber} belum punya summary.`);
-      if (headings.has(heading)) issues.push(`Heading berulang: ${heading}.`);
+      if (!heading.trim()) issues.push(`Adegan ${sceneNumber} belum punya judul lokasi.`);
+      if (!summary.trim()) issues.push(`Adegan ${sceneNumber} belum punya ringkasan.`);
+      if (headings.has(heading)) issues.push(`Judul lokasi berulang: ${heading}.`);
       headings.add(heading);
     });
 
@@ -125,7 +125,7 @@ export function ProductionWorkspace({
       <ToolSection
         icon={<Workflow />}
         title="Mode Kerja"
-        description="Memilih cara layar dipakai: reading bersih, directing dengan catatan, atau edit teks langsung."
+        description="Pilih tampilan kerja: baca naskah bersih, lihat catatan sutradara, atau edit teks langsung."
       >
         <div className="grid grid-cols-3 gap-2">
           {(["read", "direct", "edit"] as const).map((item) => (
@@ -136,7 +136,7 @@ export function ProductionWorkspace({
               onClick={() => onModeChange(item)}
               className="capitalize"
             >
-              {item}
+              {getModeLabel(item)}
             </Button>
           ))}
         </div>
@@ -144,35 +144,35 @@ export function ProductionWorkspace({
 
       <Tabs defaultValue={getToolsetForMode(mode)} key={mode} className="space-y-3">
         <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-xl bg-muted p-1">
-          <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-          <TabsTrigger value="write" className="text-xs">Writing</TabsTrigger>
-          <TabsTrigger value="direct" className="text-xs">Directing</TabsTrigger>
-          <TabsTrigger value="lock" className="text-xs">Lock</TabsTrigger>
+          <TabsTrigger value="overview" className="text-xs">Ringkasan</TabsTrigger>
+          <TabsTrigger value="write" className="text-xs">Penulisan</TabsTrigger>
+          <TabsTrigger value="direct" className="text-xs">Sutradara</TabsTrigger>
+          <TabsTrigger value="lock" className="text-xs">Kunci</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
           <ToolSection
             icon={<ListChecks />}
-            title="Roadmap Tahap 1-3"
-            description="Urutan kerja lengkap dari draft naskah sampai siap dibaca, disutradarai, dan dikunci produksi."
+            title="Alur Kerja Tahap 1-3"
+            description="Urutan kerja dari draf naskah sampai siap dibaca, disutradarai, dan dikunci produksi."
           >
             <div className="space-y-3 text-xs">
               <div className="border-l-2 border-blood pl-3">
-                <p className="font-semibold">Tahap 1: Writing & Revision</p>
+                <p className="font-semibold">Tahap 1: Penulisan & Revisi</p>
                 <p className="text-muted-foreground">
-                  Pakai Cari & Ganti, edit langsung, character bible, dan auto rewrite note.
+                  Pakai Cari & Ganti, edit langsung, profil karakter, dan catatan revisi otomatis.
                 </p>
               </div>
               <div className="border-l-2 border-amber-accent pl-3">
-                <p className="font-semibold">Tahap 2: Reading & Directing</p>
+                <p className="font-semibold">Tahap 2: Baca & Penyutradaraan</p>
                 <p className="text-muted-foreground">
-                  Pakai Reading Cast View, Director Notes, Dialogue Pass, dan Shot Intent untuk table read.
+                  Pakai tampilan baca pemain, catatan sutradara, pengecekan dialog, dan arahan gambar untuk latihan baca.
                 </p>
               </div>
               <div className="border-l-2 border-foreground/30 pl-3">
-                <p className="font-semibold">Tahap 3: Production Lock</p>
+                <p className="font-semibold">Tahap 3: Kunci Produksi</p>
                 <p className="text-muted-foreground">
-                  Pakai Revision Status, Scene Cards, Continuity Checker, Production Notes, dan Version History.
+                  Pakai status revisi, kartu adegan, cek kesinambungan, catatan produksi, dan riwayat versi.
                 </p>
               </div>
             </div>
@@ -184,9 +184,9 @@ export function ProductionWorkspace({
             description="Ringkasan singkat fungsi tiap mode agar tidak terasa sama saat dipilih."
           >
             <div className="space-y-3 text-xs">
-              <p><span className="font-semibold text-foreground">Reading:</span> baca naskah bersih seperti script final.</p>
-              <p><span className="font-semibold text-foreground">Directing:</span> lihat lapisan kerja sutradara per scene, termasuk note, shot intent, dan status.</p>
-              <p><span className="font-semibold text-foreground">Editing:</span> ubah isi scene langsung per elemen tanpa masuk tool lain.</p>
+              <p><span className="font-semibold text-foreground">Baca:</span> baca naskah bersih seperti versi final.</p>
+              <p><span className="font-semibold text-foreground">Sutradara:</span> lihat catatan kerja sutradara per adegan, termasuk catatan, arahan gambar, dan status.</p>
+              <p><span className="font-semibold text-foreground">Edit:</span> ubah isi adegan langsung per bagian tanpa membuka alat lain.</p>
             </div>
           </ToolSection>
         </TabsContent>
@@ -196,8 +196,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<Users />}
-            title="Character Bible"
-            description="Menyimpan identitas, kelemahan, dan cara pandang karakter agar konsisten sepanjang naskah."
+            title="Profil Karakter"
+            description="Simpan identitas, konflik batin, dan kriteria talent agar karakter konsisten sepanjang naskah."
           >
             <div className="space-y-3">
               {screenplay.projectConfig.characters.map((character) => (
@@ -205,18 +205,45 @@ export function ProductionWorkspace({
                   <Input
                     value={character.name}
                     onChange={(event) => updateCharacterProfile(character.id, { name: event.target.value })}
+                    placeholder="Nama karakter"
                     className="font-semibold"
+                  />
+                  <Input
+                    value={character.ageRange ?? ""}
+                    onChange={(event) =>
+                      updateCharacterProfile(character.id, { ageRange: event.target.value })
+                    }
+                    placeholder="Rentang usia talent"
+                    className="text-xs"
+                  />
+                  <Textarea
+                    value={character.talentCriteria ?? ""}
+                    onChange={(event) =>
+                      updateCharacterProfile(character.id, { talentCriteria: event.target.value })
+                    }
+                    placeholder="Kriteria talent"
+                    className="min-h-16 text-xs"
                   />
                   <Textarea
                     value={character.physicalDescription}
                     onChange={(event) =>
                       updateCharacterProfile(character.id, { physicalDescription: event.target.value })
                     }
+                    placeholder="Fisik atau ciri visual"
                     className="min-h-16 text-xs"
                   />
                   <Textarea
                     value={character.weakness}
                     onChange={(event) => updateCharacterProfile(character.id, { weakness: event.target.value })}
+                    placeholder="Konflik atau ketakutan"
+                    className="min-h-16 text-xs"
+                  />
+                  <Textarea
+                    value={character.specialSkills ?? ""}
+                    onChange={(event) =>
+                      updateCharacterProfile(character.id, { specialSkills: event.target.value })
+                    }
+                    placeholder="Skill atau aksi khusus"
                     className="min-h-16 text-xs"
                   />
                 </div>
@@ -226,8 +253,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<Sparkles />}
-            title="Auto Rewrite by Note"
-            description="Menerapkan arahan revisi ke scene sebagai draft rewrite cepat sebelum writer merapikan detailnya."
+            title="Revisi Otomatis dari Catatan"
+            description="Terapkan arahan revisi ke adegan sebagai draf cepat sebelum penulis merapikan detailnya."
           >
             <div className="space-y-2">
               {scenes.map(({ id, heading, rewriteNote }) => (
@@ -240,7 +267,7 @@ export function ProductionWorkspace({
                     className="min-h-16 text-xs"
                   />
                   <Button size="sm" variant="outline" onClick={() => applyRewriteNote(id)}>
-                    Terapkan Draft Rewrite
+                    Terapkan Draf Revisi
                   </Button>
                 </div>
               ))}
@@ -251,8 +278,8 @@ export function ProductionWorkspace({
         <TabsContent value="direct" className="space-y-4">
           <ToolSection
             icon={<MessageSquare />}
-            title="Director Notes"
-            description="Memberi feedback per scene tanpa harus mengubah teks naskah secara langsung."
+            title="Catatan Sutradara"
+            description="Beri masukan per adegan tanpa mengubah teks naskah langsung."
           >
             <div className="space-y-3">
               {scenes.map(({ id, act, sceneNumber, heading, comments }) => (
@@ -260,7 +287,7 @@ export function ProductionWorkspace({
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-xs font-semibold text-blood">
-                        Act {act.actNumber} / Scene {sceneNumber}
+                        Babak {act.actNumber} / Adegan {sceneNumber}
                       </p>
                       <p className="text-xs text-foreground">{heading}</p>
                     </div>
@@ -277,7 +304,7 @@ export function ProductionWorkspace({
                     onChange={(event) =>
                       setCommentDrafts((drafts) => ({ ...drafts, [id]: event.target.value }))
                     }
-                    placeholder="Catatan director untuk scene ini"
+                    placeholder="Catatan sutradara untuk adegan ini"
                     className="min-h-16 text-xs"
                   />
                   <Button
@@ -288,7 +315,7 @@ export function ProductionWorkspace({
                       setCommentDrafts((drafts) => ({ ...drafts, [id]: "" }));
                     }}
                   >
-                    Tambah Note
+                    Tambah Catatan
                   </Button>
                 </div>
               ))}
@@ -297,8 +324,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<Mic2 />}
-            title="Dialogue Pass"
-            description="Memeriksa dan mengedit hanya bagian dialog serta nama karakter tanpa terganggu action line."
+            title="Pengecekan Dialog"
+            description="Periksa dan edit bagian dialog serta nama karakter tanpa terganggu baris aksi."
           >
             <div className="space-y-2">
               {dialogueLines.map(({ sceneId, heading, element, elementIndex }, index) => (
@@ -316,8 +343,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<BookOpen />}
-            title="Reading Cast View"
-            description="Menampilkan dialog berdasarkan karakter agar table read dan pembagian talent lebih mudah."
+            title="Tampilan Baca Pemain"
+            description="Tampilkan dialog berdasarkan karakter agar latihan baca dan pembagian talent lebih mudah."
           >
             {screenplay.projectConfig.characters.map((character) => {
               const lines = collectCharacterDialogue(screenplay.acts.flatMap((act) => act.scenes), character.name);
@@ -340,8 +367,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<Film />}
-            title="Shot Intent / Mood Layer"
-            description="Mencatat rasa visual scene seperti tension, blocking, silence, dan energi kamera untuk director."
+            title="Arahan Gambar / Suasana"
+            description="Catat rasa visual adegan seperti ketegangan, blocking, jeda sunyi, dan energi kamera untuk sutradara."
           >
             <div className="space-y-2">
               {scenes.map(({ id, heading, shotIntent }) => (
@@ -350,7 +377,7 @@ export function ProductionWorkspace({
                   <Textarea
                     value={shotIntent || ""}
                     onChange={(event) => setSceneShotIntent(id, event.target.value)}
-                    placeholder="Contoh: slow push-in, tahan sunyi 4 detik sebelum suara pintu"
+                    placeholder="Contoh: kamera mendekat pelan, tahan sunyi 4 detik sebelum suara pintu"
                     className="min-h-16 text-xs"
                   />
                 </div>
@@ -362,14 +389,14 @@ export function ProductionWorkspace({
         <TabsContent value="lock" className="space-y-4">
           <ToolSection
             icon={<ClipboardCheck />}
-            title="Revision Status"
-            description="Menandai scene mana yang masih draft, perlu revisi, sudah direview, atau sudah approved."
+            title="Status Revisi"
+            description="Tandai adegan yang masih draf, perlu revisi, sudah dicek, atau sudah disetujui."
           >
             <div className="space-y-2">
               {scenes.map(({ id, sceneNumber, heading, revisionStatus }) => (
                 <div key={id} className="grid grid-cols-[1fr_auto] items-center gap-2 rounded-md border border-border/70 p-2">
                   <div>
-                    <p className="text-xs font-medium">Scene {sceneNumber}</p>
+                    <p className="text-xs font-medium">Adegan {sceneNumber}</p>
                     <p className="line-clamp-1 text-xs text-muted-foreground">{heading}</p>
                   </div>
                   <select
@@ -392,14 +419,14 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<Clapperboard />}
-            title="Scene Cards / Beat Board"
-            description="Melihat struktur cerita sebagai kartu ringkas agar ritme act, konflik, dan fungsi scene cepat terbaca."
+            title="Kartu Adegan / Papan Alur"
+            description="Lihat struktur cerita sebagai kartu ringkas agar ritme babak, konflik, dan fungsi adegan cepat terbaca."
           >
             <div className="space-y-2">
               {scenes.map(({ id, sceneNumber, heading, summary, revisionStatus }) => (
                 <div key={id} className="rounded-lg border border-border/70 p-3">
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <p className="text-xs font-semibold text-blood">Scene {sceneNumber}</p>
+                    <p className="text-xs font-semibold text-blood">Adegan {sceneNumber}</p>
                     <Badge variant={revisionStatus === "approved" ? "secondary" : "outline"}>
                       {STATUS_LABELS[revisionStatus || "draft"]}
                     </Badge>
@@ -417,12 +444,12 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<SearchCheck />}
-            title="Continuity Checker"
-            description="Mendeteksi masalah konsistensi dasar seperti karakter tidak muncul, lokasi melebihi batas, atau scene kosong."
+            title="Cek Kesinambungan"
+            description="Deteksi masalah konsistensi dasar seperti karakter tidak muncul, lokasi melebihi batas, atau adegan kosong."
           >
             {continuityIssues.length === 0 ? (
               <p className="rounded-md bg-muted/60 p-3 text-xs text-muted-foreground">
-                Tidak ada masalah continuity dasar yang terdeteksi.
+                Tidak ada masalah kesinambungan dasar yang terdeteksi.
               </p>
             ) : (
               <div className="space-y-2">
@@ -437,8 +464,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<StickyNote />}
-            title="Production Notes"
-            description="Mencatat kebutuhan produksi seperti lokasi, properti, biaya, blocking, dan batasan syuting."
+            title="Catatan Produksi"
+            description="Catat kebutuhan produksi seperti lokasi, properti, biaya, posisi pemain, dan batasan syuting."
           >
             <Textarea
               value={screenplay.productionNotes || ""}
@@ -453,7 +480,7 @@ export function ProductionWorkspace({
                   <Textarea
                     value={productionNote || ""}
                     onChange={(event) => setSceneProductionNote(id, event.target.value)}
-                    placeholder="Catatan produksi untuk scene ini"
+                    placeholder="Catatan produksi untuk adegan ini"
                     className="min-h-16 text-xs"
                   />
                 </div>
@@ -463,8 +490,8 @@ export function ProductionWorkspace({
 
           <ToolSection
             icon={<FileClock />}
-            title="Version History"
-            description="Menyimpan snapshot draft sehingga tim bisa kembali ke versi lama saat revisi terlalu jauh."
+            title="Riwayat Versi"
+            description="Simpan salinan draf agar tim bisa kembali ke versi lama saat revisi terlalu jauh."
           >
             <div className="flex gap-2">
               <Input
@@ -492,7 +519,7 @@ export function ProductionWorkspace({
                     </p>
                   </div>
                   <Button size="sm" variant="outline" onClick={() => restoreVersion(version.id)}>
-                    Restore
+                    Pulihkan
                   </Button>
                 </div>
               ))}
@@ -508,6 +535,12 @@ function getToolsetForMode(mode: WorkMode) {
   if (mode === "edit") return "write";
   if (mode === "direct") return "direct";
   return "overview";
+}
+
+function getModeLabel(mode: WorkMode) {
+  if (mode === "read") return "Baca";
+  if (mode === "direct") return "Sutradara";
+  return "Edit";
 }
 
 function ToolSection({

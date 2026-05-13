@@ -21,7 +21,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-muted-foreground">
           <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
             <Clapperboard className="h-6 w-6 text-blood" />
-            <span>Multi-Agent AI Pipeline</span>
+            <span>Alur AI Bertahap</span>
           </div>
           <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
             <Sparkles className="h-6 w-6 text-amber-accent" />
@@ -29,7 +29,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card border border-border">
             <FileText className="h-6 w-6 text-blood" />
-            <span>Format Screenplay Standar</span>
+            <span>Format Naskah Film</span>
           </div>
         </div>
 

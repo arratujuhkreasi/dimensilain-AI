@@ -48,7 +48,7 @@ export default function ScriptPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${screenplay.projectConfig.title || "screenplay"}.${format}`;
+      a.download = `${screenplay.projectConfig.title || "naskah"}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -89,7 +89,7 @@ export default function ScriptPage() {
           {isGenerating ? (
             <Button variant="destructive" size="sm" onClick={abort}>
               <Square className="h-3 w-3 mr-1" />
-              Stop
+              Hentikan
             </Button>
           ) : (
             <>
@@ -101,7 +101,7 @@ export default function ScriptPage() {
                     onClick={() => setWorkMode("read")}
                   >
                     <BookOpen className="h-3 w-3 mr-1" />
-                    Reading
+                    Mode Baca
                   </Button>
                   <Button
                     variant={workMode === "direct" ? "secondary" : "ghost"}
@@ -109,7 +109,7 @@ export default function ScriptPage() {
                     onClick={() => setWorkMode("direct")}
                   >
                     <Clapperboard className="h-3 w-3 mr-1" />
-                    Directing
+                    Mode Sutradara
                   </Button>
                   <Button
                     variant={workMode === "edit" ? "secondary" : "ghost"}
@@ -117,7 +117,7 @@ export default function ScriptPage() {
                     onClick={() => setWorkMode("edit")}
                   >
                     <Pencil className="h-3 w-3 mr-1" />
-                    Editing
+                    Mode Edit
                   </Button>
                 </div>
               )}
@@ -128,7 +128,7 @@ export default function ScriptPage() {
                 className="bg-blood hover:bg-blood/90 text-blood-foreground"
               >
                 <Play className="h-3 w-3 mr-1" />
-                Generate
+                Buat Naskah
               </Button>
               {screenplay && screenplay.acts.length > 0 && (
                 <>
@@ -160,14 +160,14 @@ export default function ScriptPage() {
 
               {screenplay && screenplay.acts.length > 0 && (
                 <div className="space-y-2 rounded-lg border border-border bg-card p-4">
-                  <h3 className="text-sm font-semibold text-muted-foreground">Outline</h3>
+                  <h3 className="text-sm font-semibold text-muted-foreground">Kerangka Cerita</h3>
                   <p className="text-xs leading-relaxed text-muted-foreground">
-                    Peta act dan scene untuk melompat cepat membaca struktur cerita.
+                    Peta babak dan adegan untuk membaca struktur cerita dengan cepat.
                   </p>
                   {screenplay.acts.map((act) => (
                     <div key={act.actNumber} className="space-y-1">
                       <p className="text-xs font-medium text-blood">
-                        Act {act.actNumber}: {act.title}
+                        Babak {act.actNumber}: {act.title}
                       </p>
                       {act.scenes.map((scene) => (
                         <p

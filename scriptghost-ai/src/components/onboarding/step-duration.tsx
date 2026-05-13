@@ -21,7 +21,7 @@ export function StepDuration() {
       <div>
         <h2 className="text-2xl font-bold">Durasi Film</h2>
         <p className="text-muted-foreground mt-1">
-          Durasi menentukan jumlah Act dan Scene yang dihasilkan
+          Durasi menentukan jumlah babak dan adegan yang dibuat
         </p>
       </div>
 
@@ -44,10 +44,10 @@ export function StepDuration() {
 
       <div className="p-4 rounded-lg bg-muted text-sm text-muted-foreground">
         <p>
-          Struktur: <span className="text-foreground font-medium">{selected.acts} Act</span> ×{" "}
-          <span className="text-foreground font-medium">{selected.scenesPerAct} Scene</span> ={" "}
+          Struktur: <span className="text-foreground font-medium">{selected.acts} babak</span> x{" "}
+          <span className="text-foreground font-medium">{selected.scenesPerAct} adegan</span> ={" "}
           <span className="text-amber-accent font-medium">
-            ~{selected.acts * selected.scenesPerAct} Scene total
+            ~{selected.acts * selected.scenesPerAct} adegan total
           </span>
         </p>
       </div>

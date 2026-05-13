@@ -36,7 +36,7 @@ export function RevisionTools({ idPrefix = "revision" }: RevisionToolsProps) {
         <h3 className="text-sm font-semibold">Cari & Ganti</h3>
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Mengganti nama, istilah, atau kalimat di seluruh naskah, outline, karakter, dan catatan.
+        Mengganti nama, istilah, atau kalimat di seluruh naskah, kerangka cerita, karakter, dan catatan.
       </p>
 
       <div className="space-y-3">

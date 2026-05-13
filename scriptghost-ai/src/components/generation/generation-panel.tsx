@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Brain, Search, MessageSquare, FileText, CheckCircle } from "lucide-react";
 
 const AGENT_INFO: Record<string, { label: string; icon: React.ReactNode }> = {
-  architect: { label: "Architect — Membuat Struktur", icon: <Brain className="h-4 w-4" /> },
-  researcher: { label: "Researcher — Riset Mitos Lokal", icon: <Search className="h-4 w-4" /> },
-  dialogue: { label: "Dialogue Master — Menulis Dialog", icon: <MessageSquare className="h-4 w-4" /> },
-  format: { label: "Format Specialist — Formatting", icon: <FileText className="h-4 w-4" /> },
+  architect: { label: "Perancang cerita - membuat struktur", icon: <Brain className="h-4 w-4" /> },
+  researcher: { label: "Periset - mencari bahan cerita", icon: <Search className="h-4 w-4" /> },
+  dialogue: { label: "Penulis dialog - membuat percakapan", icon: <MessageSquare className="h-4 w-4" /> },
+  format: { label: "Perapih format - menyusun naskah", icon: <FileText className="h-4 w-4" /> },
   idle: { label: "Menunggu", icon: <CheckCircle className="h-4 w-4" /> },
 };
 
@@ -32,7 +32,7 @@ export function GenerationPanel() {
           <CheckCircle className="h-4 w-4 text-green-500" />
         )}
         <span className="text-sm font-medium">
-          {isGenerating ? "Generating..." : "Selesai"}
+          {isGenerating ? "Sedang membuat naskah..." : "Selesai"}
         </span>
       </div>
 
@@ -49,7 +49,7 @@ export function GenerationPanel() {
         <div className="space-y-1">
           <Progress value={progressPercent} className="h-2" />
           <p className="text-xs text-muted-foreground">
-            {generationProgress.completed} / {generationProgress.total} scene
+            {generationProgress.completed} / {generationProgress.total} adegan
           </p>
         </div>
       )}

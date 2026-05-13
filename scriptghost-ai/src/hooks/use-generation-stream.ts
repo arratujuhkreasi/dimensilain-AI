@@ -31,7 +31,7 @@ export function useGenerationStream() {
         });
 
         if (!res.ok) {
-          throw new Error("Failed to generate outline");
+          throw new Error("Gagal membuat kerangka cerita");
         }
 
         const data = await res.json();
@@ -64,8 +64,8 @@ export function useGenerationStream() {
           signal: abortRef.current.signal,
         });
 
-        if (!res.ok) throw new Error("Failed to generate scene");
-        if (!res.body) throw new Error("No response body");
+        if (!res.ok) throw new Error("Gagal membuat adegan");
+        if (!res.body) throw new Error("Respons server kosong");
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
@@ -128,8 +128,8 @@ export function useGenerationStream() {
           signal: abortRef.current.signal,
         });
 
-        if (!res.ok) throw new Error("Failed to start generation");
-        if (!res.body) throw new Error("No response body");
+        if (!res.ok) throw new Error("Gagal memulai pembuatan naskah");
+        if (!res.body) throw new Error("Respons server kosong");
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();

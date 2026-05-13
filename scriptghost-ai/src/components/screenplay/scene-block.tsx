@@ -53,7 +53,7 @@ export function SceneBlock({ scene, isEditing = false, onElementChange }: SceneB
   if (scene.elements.length === 0) {
     return (
       <div className="py-4 text-muted-foreground text-sm italic">
-        Scene {scene.sceneNumber}: {scene.summary}
+        Adegan {scene.sceneNumber}: {scene.summary}
       </div>
     );
   }

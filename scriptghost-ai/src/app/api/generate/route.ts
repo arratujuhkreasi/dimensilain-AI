@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const parsed = projectConfigSchema.safeParse(body.projectConfig);
 
     if (!parsed.success) {
-      return new Response(JSON.stringify({ error: "Invalid project config" }), {
+      return new Response(JSON.stringify({ error: "Data proyek belum valid" }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Server error" }),
+      JSON.stringify({ error: error instanceof Error ? error.message : "Terjadi masalah di server" }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
