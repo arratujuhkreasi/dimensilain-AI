@@ -69,7 +69,7 @@ export const useProjectStore = create<ProjectStore>()(
                 name: "",
                 physicalDescription: "",
                 weakness: "",
-                role: "supporting",
+                role: s.config.characters.length === 0 ? "protagonist" : "supporting",
               },
             ],
           },

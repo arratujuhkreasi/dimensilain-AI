@@ -29,11 +29,23 @@ export function StepCharacters() {
       <div>
         <h2 className="text-2xl font-bold">Karakter</h2>
         <p className="text-muted-foreground mt-1">
-          Definisikan karakter utama beserta kelemahan mereka
+          Minimal satu nama karakter cukup. Catatan lain boleh dikosongkan.
         </p>
       </div>
 
       <div className="space-y-4">
+        {config.characters.length === 0 && (
+          <div className="rounded-lg border border-dashed border-border p-5 text-center">
+            <p className="mb-3 text-sm text-muted-foreground">
+              Belum ada karakter. Mulai dari tokoh utama dulu.
+            </p>
+            <Button variant="outline" onClick={addCharacter}>
+              <Plus className="h-4 w-4 mr-2" />
+              Tambah Karakter Utama
+            </Button>
+          </div>
+        )}
+
         {config.characters.map((char) => (
           <div key={char.id} className="p-4 rounded-lg border border-border space-y-3">
             <div className="flex items-center justify-between">
@@ -52,14 +64,19 @@ export function StepCharacters() {
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="ghost" size="icon" onClick={() => removeCharacter(char.id)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={`Hapus karakter ${char.name || "tanpa nama"}`}
+                onClick={() => removeCharacter(char.id)}
+              >
                 <Trash2 className="h-4 w-4 text-destructive" />
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
               <div className="space-y-1">
-                <Label className="text-xs">Nama</Label>
+                <Label className="text-xs">Nama Karakter</Label>
                 <Input
                   placeholder="Nama karakter"
                   value={char.name}
@@ -67,31 +84,25 @@ export function StepCharacters() {
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Fisik</Label>
+                <Label className="text-xs">Catatan singkat (opsional)</Label>
                 <Input
-                  placeholder="Deskripsi fisik"
+                  placeholder="Contoh: pendiam, skeptis, baru pindah rumah"
                   value={char.physicalDescription}
                   onChange={(e) =>
                     updateCharacter(char.id, { physicalDescription: e.target.value })
                   }
                 />
               </div>
-              <div className="space-y-1">
-                <Label className="text-xs">Kelemahan</Label>
-                <Input
-                  placeholder="Kelemahan/fear"
-                  value={char.weakness}
-                  onChange={(e) => updateCharacter(char.id, { weakness: e.target.value })}
-                />
-              </div>
             </div>
           </div>
         ))}
 
-        <Button variant="outline" onClick={addCharacter} className="w-full">
-          <Plus className="h-4 w-4 mr-2" />
-          Tambah Karakter
-        </Button>
+        {config.characters.length > 0 && (
+          <Button variant="outline" onClick={addCharacter} className="w-full">
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah Karakter
+          </Button>
+        )}
       </div>
     </div>
   );

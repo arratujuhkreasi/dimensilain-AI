@@ -14,7 +14,7 @@ export default function HomePage() {
         </div>
 
         <p className="text-lg text-muted-foreground">
-          Professional Horror Script Architect untuk tim produksi{" "}
+          Buat draft naskah horor dari ide singkat untuk tim produksi{" "}
           <span className="text-amber-accent font-semibold">Dimensi Lain</span>
         </p>
 
@@ -35,7 +35,7 @@ export default function HomePage() {
 
         <Link href="/project/new">
           <Button size="lg" className="bg-blood hover:bg-blood/90 text-blood-foreground mt-4">
-            Mulai Proyek Baru
+            Mulai Naskah Baru
           </Button>
         </Link>
       </div>

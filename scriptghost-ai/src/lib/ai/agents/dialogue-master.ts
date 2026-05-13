@@ -14,7 +14,7 @@ export async function runDialogueMaster(input: DialogueInput): Promise<string> {
   const { projectConfig, scene, researchContext, previousSceneSummary } = input;
 
   const characterList = projectConfig.characters
-    .map((c) => `- ${c.name} (${c.role}): ${c.physicalDescription}. Kelemahan: ${c.weakness}`)
+    .map(formatCharacterBrief)
     .join("\n");
 
   const chain = dialoguePrompt.pipe(getLlm());
@@ -35,7 +35,7 @@ export async function* streamDialogueMaster(input: DialogueInput): AsyncGenerato
   const { projectConfig, scene, researchContext, previousSceneSummary } = input;
 
   const characterList = projectConfig.characters
-    .map((c) => `- ${c.name} (${c.role}): ${c.physicalDescription}. Kelemahan: ${c.weakness}`)
+    .map(formatCharacterBrief)
     .join("\n");
 
   const chain = dialoguePrompt.pipe(getLlm());
@@ -53,4 +53,12 @@ export async function* streamDialogueMaster(input: DialogueInput): AsyncGenerato
     const content = typeof chunk.content === "string" ? chunk.content : "";
     if (content) yield content;
   }
+}
+
+function formatCharacterBrief(character: ProjectConfig["characters"][number]) {
+  const details = [character.physicalDescription, character.weakness && `Kelemahan: ${character.weakness}`]
+    .filter(Boolean)
+    .join(". ");
+
+  return `- ${character.name} (${character.role})${details ? `: ${details}` : ""}`;
 }

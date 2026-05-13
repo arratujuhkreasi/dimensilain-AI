@@ -3,8 +3,8 @@ import { z } from "zod";
 export const characterSchema = z.object({
   id: z.string(),
   name: z.string().min(1, "Nama karakter wajib diisi"),
-  physicalDescription: z.string().min(1, "Deskripsi fisik wajib diisi"),
-  weakness: z.string().min(1, "Kelemahan karakter wajib diisi"),
+  physicalDescription: z.string().optional().default(""),
+  weakness: z.string().optional().default(""),
   role: z.enum(["protagonist", "antagonist", "supporting", "victim"]),
 });
 

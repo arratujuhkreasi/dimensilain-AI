@@ -18,7 +18,7 @@ export const SUB_GENRE_LABELS: Record<string, string> = {
 };
 
 export const JUMP_SCARE_LABELS: Record<string, string> = {
-  low: "Low — Atmosferik & Slow Burn",
-  medium: "Medium — Seimbang",
-  extreme: "Extreme — Intensif & Relentless",
+  low: "Ringan - atmosferik",
+  medium: "Sedang - seimbang",
+  extreme: "Tinggi - intens",
 };

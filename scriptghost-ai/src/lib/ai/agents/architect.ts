@@ -9,7 +9,7 @@ export async function runArchitect(projectConfig: ProjectConfig): Promise<Act[]>
   const durConfig = DURATION_CONFIG[projectConfig.duration];
 
   const characterList = projectConfig.characters
-    .map((c) => `- ${c.name} (${c.role}): ${c.physicalDescription}. Kelemahan: ${c.weakness}`)
+    .map(formatCharacterBrief)
     .join("\n");
 
   const chain = architectPrompt.pipe(getLlmStructured());
@@ -46,6 +46,14 @@ export async function runArchitect(projectConfig: ProjectConfig): Promise<Act[]>
       status: "pending" as const,
     })),
   }));
+}
+
+function formatCharacterBrief(character: ProjectConfig["characters"][number]) {
+  const details = [character.physicalDescription, character.weakness && `Kelemahan: ${character.weakness}`]
+    .filter(Boolean)
+    .join(". ");
+
+  return `- ${character.name} (${character.role})${details ? `: ${details}` : ""}`;
 }
 
 function parseArchitectJson(content: string):

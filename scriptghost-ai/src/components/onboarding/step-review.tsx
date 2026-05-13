@@ -35,7 +35,7 @@ export function StepReview() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">Review Proyek</h2>
-        <p className="text-muted-foreground mt-1">Pastikan semua detail sudah benar</p>
+        <p className="text-muted-foreground mt-1">Cek singkat sebelum naskah dibuat</p>
       </div>
 
       <div className="space-y-4 text-sm">
@@ -56,11 +56,11 @@ export function StepReview() {
           <div className="p-3 rounded-lg bg-muted">
             <span className="text-muted-foreground">Struktur:</span>{" "}
             <span className="font-medium">
-              {durConfig.acts} Act × {durConfig.scenesPerAct} Scene
+              {durConfig.acts} Act x {durConfig.scenesPerAct} Scene
             </span>
           </div>
           <div className="p-3 rounded-lg bg-muted">
-            <span className="text-muted-foreground">Intensitas:</span>{" "}
+            <span className="text-muted-foreground">Horor:</span>{" "}
             <span className="font-medium capitalize">{config.jumpScareDensity}</span>
           </div>
         </div>
@@ -77,10 +77,12 @@ export function StepReview() {
           {config.setting || "Belum ditentukan"}
         </div>
 
-        <div className="p-3 rounded-lg bg-muted">
-          <span className="text-muted-foreground">Batasan:</span>{" "}
-          Maks {config.constraints.maxLocations} lokasi, {config.constraints.maxActors} aktor
-        </div>
+        {config.constraints.additionalNotes && (
+          <div className="p-3 rounded-lg bg-muted">
+            <span className="text-muted-foreground">Catatan:</span>{" "}
+            {config.constraints.additionalNotes}
+          </div>
+        )}
       </div>
 
       <Button
@@ -94,7 +96,7 @@ export function StepReview() {
       </Button>
       {!validation.success && (
         <p className="text-center text-xs text-muted-foreground">
-          Lengkapi judul, logline, minimal satu karakter, dan setting sebelum generate.
+          Lengkapi judul, logline, lokasi, dan minimal satu nama karakter sebelum generate.
         </p>
       )}
     </div>
