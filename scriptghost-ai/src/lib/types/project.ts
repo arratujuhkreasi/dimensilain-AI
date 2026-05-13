@@ -16,8 +16,11 @@ export type CharacterRole = "protagonist" | "antagonist" | "supporting" | "victi
 export interface Character {
   id: string;
   name: string;
+  ageRange: string;
+  talentCriteria: string;
   physicalDescription: string;
   weakness: string;
+  specialSkills: string;
   role: CharacterRole;
 }
 

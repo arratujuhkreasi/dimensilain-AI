@@ -287,8 +287,11 @@ export const useScriptStore = create<ScriptStore>()(
             characters: s.screenplay.projectConfig.characters.map((character) => ({
               ...character,
               name: replaceValue(character.name),
+              ageRange: replaceValue(character.ageRange ?? ""),
+              talentCriteria: replaceValue(character.talentCriteria ?? ""),
               physicalDescription: replaceValue(character.physicalDescription),
               weakness: replaceValue(character.weakness),
+              specialSkills: replaceValue(character.specialSkills ?? ""),
             })),
             constraints: {
               ...s.screenplay.projectConfig.constraints,

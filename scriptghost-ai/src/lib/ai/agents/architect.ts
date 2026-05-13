@@ -49,7 +49,13 @@ export async function runArchitect(projectConfig: ProjectConfig): Promise<Act[]>
 }
 
 function formatCharacterBrief(character: ProjectConfig["characters"][number]) {
-  const details = [character.physicalDescription, character.weakness && `Kelemahan: ${character.weakness}`]
+  const details = [
+    character.ageRange && `Usia talent: ${character.ageRange}`,
+    character.talentCriteria && `Kriteria talent: ${character.talentCriteria}`,
+    character.physicalDescription && `Ciri visual: ${character.physicalDescription}`,
+    character.weakness && `Konflik/ketakutan: ${character.weakness}`,
+    character.specialSkills && `Skill/aksi khusus: ${character.specialSkills}`,
+  ]
     .filter(Boolean)
     .join(". ");
 

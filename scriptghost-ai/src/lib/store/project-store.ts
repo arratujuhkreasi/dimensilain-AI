@@ -67,8 +67,11 @@ export const useProjectStore = create<ProjectStore>()(
               {
                 id: nanoid(),
                 name: "",
+                ageRange: "",
+                talentCriteria: "",
                 physicalDescription: "",
                 weakness: "",
+                specialSkills: "",
                 role: s.config.characters.length === 0 ? "protagonist" : "supporting",
               },
             ],

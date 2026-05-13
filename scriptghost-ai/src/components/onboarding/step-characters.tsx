@@ -29,7 +29,7 @@ export function StepCharacters() {
       <div>
         <h2 className="text-2xl font-bold">Karakter</h2>
         <p className="text-muted-foreground mt-1">
-          Minimal satu nama karakter cukup. Catatan lain boleh dikosongkan.
+          Isi nama peran dan kriteria talent yang penting untuk casting.
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export function StepCharacters() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label className="text-xs">Nama Karakter</Label>
                 <Input
@@ -84,13 +84,45 @@ export function StepCharacters() {
                 />
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">Catatan singkat (opsional)</Label>
+                <Label className="text-xs">Rentang Usia</Label>
                 <Input
-                  placeholder="Contoh: pendiam, skeptis, baru pindah rumah"
-                  value={char.physicalDescription}
+                  placeholder="Contoh: 20-25 tahun"
+                  value={char.ageRange ?? ""}
+                  onChange={(e) => updateCharacter(char.id, { ageRange: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Kriteria Talent</Label>
+                <Input
+                  placeholder="Contoh: ekspresif, bisa terlihat rapuh tapi tegas"
+                  value={char.talentCriteria ?? ""}
+                  onChange={(e) => updateCharacter(char.id, { talentCriteria: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Fisik / Ciri Visual</Label>
+                <Input
+                  placeholder="Contoh: kurus, mata lelah, rambut pendek"
+                  value={char.physicalDescription ?? ""}
                   onChange={(e) =>
                     updateCharacter(char.id, { physicalDescription: e.target.value })
                   }
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Konflik / Ketakutan</Label>
+                <Input
+                  placeholder="Contoh: takut gelap, trauma kehilangan adik"
+                  value={char.weakness ?? ""}
+                  onChange={(e) => updateCharacter(char.id, { weakness: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Skill / Aksi Khusus</Label>
+                <Input
+                  placeholder="Contoh: berlari, stunt ringan, menangis intens"
+                  value={char.specialSkills ?? ""}
+                  onChange={(e) => updateCharacter(char.id, { specialSkills: e.target.value })}
                 />
               </div>
             </div>
