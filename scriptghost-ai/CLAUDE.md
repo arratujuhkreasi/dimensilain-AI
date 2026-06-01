@@ -44,7 +44,7 @@ DIMENSI LAIN SCRIPT PRODUCTION — full-stack Next.js 14+ app for automated horr
 ### Environment Variables (.env.local)
 - `CEREBRAS_API_KEY` — API key for Cerebras/SambaNova
 - `CEREBRAS_BASE_URL` — Base URL (OpenAI-compatible endpoint)
-- `CEREBRAS_MODEL` — Model name (e.g., llama-3.1-70b)
+- `CEREBRAS_MODEL` — Model name (e.g., gpt-oss-120b)
 
 ## Design System
 - Dark mode only (#0a0a0a background)

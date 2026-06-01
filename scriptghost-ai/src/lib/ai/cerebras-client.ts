@@ -56,6 +56,6 @@ function getCerebrasConfig() {
   return {
     apiKey,
     baseURL: process.env.CEREBRAS_BASE_URL?.trim() || "https://api.cerebras.ai/v1",
-    model: process.env.CEREBRAS_MODEL?.trim() || "llama3.1-8b",
+    model: process.env.CEREBRAS_MODEL?.trim() || "gpt-oss-120b",
   };
 }
