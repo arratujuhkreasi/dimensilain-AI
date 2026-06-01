@@ -1,13 +1,13 @@
 import { runArchitect } from "./agents/architect";
 import { runResearcher } from "./agents/researcher";
 import { runDialogueMaster } from "./agents/dialogue-master";
-import { runFormatSpecialist } from "./agents/format-specialist";
+import { runFormatSpecialist, streamFormatSpecialist } from "./agents/format-specialist";
 import type { ProjectConfig } from "@/lib/types/project";
 import type { Act, Scene, SceneElement } from "@/lib/types/screenplay";
 
 export interface PipelineCallbacks {
   onAgentChange: (agent: string) => void;
-  onSceneStart: (actNumber: number, sceneNumber: number) => void;
+  onSceneStart: (actNumber: number, sceneNumber: number, sceneId: string) => void;
   onToken: (token: string) => void;
   onSceneComplete: (sceneId: string, elements: SceneElement[]) => void;
   onOutlineComplete: (acts: Act[]) => void;
@@ -57,7 +57,7 @@ export async function runFullPipeline(
 
     for (let i = 0; i < allScenes.length; i++) {
       const scene = allScenes[i];
-      callbacks.onSceneStart(scene.actNumber, scene.sceneNumber);
+      callbacks.onSceneStart(scene.actNumber, scene.sceneNumber, scene.id);
 
       callbacks.onAgentChange("researcher");
       const researchContext = await runResearcher({
@@ -76,7 +76,12 @@ export async function runFullPipeline(
       });
 
       callbacks.onAgentChange("format");
-      const formatted = await runFormatSpecialist(rawScene);
+      let formatted = "";
+
+      for await (const token of streamFormatSpecialist(rawScene)) {
+        formatted += token;
+        callbacks.onToken(token);
+      }
 
       const elements = parseFormattedScene(formatted);
       callbacks.onSceneComplete(scene.id, elements);

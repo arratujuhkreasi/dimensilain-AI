@@ -25,8 +25,8 @@ export async function POST(req: Request) {
 
         await runFullPipeline(parsed.data, {
           onAgentChange: (agent) => sendEvent("agent-status", { agent }),
-          onSceneStart: (actNumber, sceneNumber) =>
-            sendEvent("scene-start", { actNumber, sceneNumber }),
+          onSceneStart: (actNumber, sceneNumber, sceneId) =>
+            sendEvent("scene-start", { actNumber, sceneNumber, sceneId }),
           onToken: (content) => sendEvent("token", { content }),
           onSceneComplete: (sceneId, elements: SceneElement[]) =>
             sendEvent("scene-complete", { sceneId, elements }),

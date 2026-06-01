@@ -17,6 +17,7 @@ interface ScriptStore {
   isGenerating: boolean;
   generationProgress: { completed: number; total: number };
   streamingContent: string;
+  generationError: string | null;
 
   setScreenplay: (screenplay: Screenplay) => void;
   setOutline: (acts: Act[]) => void;
@@ -41,6 +42,7 @@ interface ScriptStore {
   setProgress: (completed: number, total: number) => void;
   appendStreamContent: (content: string) => void;
   clearStreamContent: () => void;
+  setGenerationError: (error: string | null) => void;
   reset: () => void;
 }
 
@@ -52,6 +54,7 @@ export const useScriptStore = create<ScriptStore>()(
       isGenerating: false,
       generationProgress: { completed: 0, total: 0 },
       streamingContent: "",
+      generationError: null,
 
       setScreenplay: (screenplay) =>
         set({
@@ -396,6 +399,7 @@ export const useScriptStore = create<ScriptStore>()(
       appendStreamContent: (content) =>
         set((s) => ({ streamingContent: s.streamingContent + content })),
       clearStreamContent: () => set({ streamingContent: "" }),
+      setGenerationError: (generationError) => set({ generationError }),
       reset: () =>
         set({
           screenplay: null,
@@ -403,6 +407,7 @@ export const useScriptStore = create<ScriptStore>()(
           isGenerating: false,
           generationProgress: { completed: 0, total: 0 },
           streamingContent: "",
+          generationError: null,
         }),
     }),
     {

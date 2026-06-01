@@ -3,7 +3,7 @@
 import { useScriptStore } from "@/lib/store/script-store";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Brain, Search, MessageSquare, FileText, CheckCircle } from "lucide-react";
+import { AlertCircle, Loader2, Brain, Search, MessageSquare, FileText, CheckCircle } from "lucide-react";
 
 const AGENT_INFO: Record<string, { label: string; icon: React.ReactNode }> = {
   architect: { label: "Perancang cerita - membuat struktur", icon: <Brain className="h-4 w-4" /> },
@@ -14,14 +14,14 @@ const AGENT_INFO: Record<string, { label: string; icon: React.ReactNode }> = {
 };
 
 export function GenerationPanel() {
-  const { currentAgent, isGenerating, generationProgress } = useScriptStore();
+  const { currentAgent, isGenerating, generationProgress, generationError } = useScriptStore();
   const agentInfo = AGENT_INFO[currentAgent] || AGENT_INFO.idle;
   const progressPercent =
     generationProgress.total > 0
       ? (generationProgress.completed / generationProgress.total) * 100
       : 0;
 
-  if (!isGenerating && generationProgress.total === 0) return null;
+  if (!isGenerating && generationProgress.total === 0 && !generationError) return null;
 
   return (
     <div className="p-4 rounded-lg border border-border bg-card space-y-3">
@@ -51,6 +51,13 @@ export function GenerationPanel() {
           <p className="text-xs text-muted-foreground">
             {generationProgress.completed} / {generationProgress.total} adegan
           </p>
+        </div>
+      )}
+
+      {generationError && (
+        <div className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>{generationError}</p>
         </div>
       )}
     </div>

@@ -16,12 +16,14 @@ export function useGenerationStream() {
     setStatus,
     appendStreamContent,
     clearStreamContent,
+    setGenerationError,
   } = useScriptStore();
 
   const generateOutline = useCallback(
     async (projectConfig: ProjectConfig) => {
       setIsGenerating(true);
       setCurrentAgent("architect");
+      setGenerationError(null);
 
       try {
         const res = await fetch("/api/generate-outline", {
@@ -30,19 +32,20 @@ export function useGenerationStream() {
           body: JSON.stringify({ projectConfig }),
         });
 
-        if (!res.ok) {
-          throw new Error("Gagal membuat kerangka cerita");
-        }
+        if (!res.ok) throw new Error(await readErrorMessage(res, "Gagal membuat kerangka cerita"));
 
         const data = await res.json();
         setOutline(data.outline);
         return data.outline as Act[];
+      } catch (error) {
+        setGenerationError(error instanceof Error ? error.message : "Gagal membuat kerangka cerita");
+        throw error;
       } finally {
         setIsGenerating(false);
         setCurrentAgent("idle");
       }
     },
-    [setIsGenerating, setCurrentAgent, setOutline]
+    [setIsGenerating, setCurrentAgent, setOutline, setGenerationError]
   );
 
   const generateScene = useCallback(
@@ -55,6 +58,7 @@ export function useGenerationStream() {
       abortRef.current = new AbortController();
       setIsGenerating(true);
       clearStreamContent();
+      setGenerationError(null);
 
       try {
         const res = await fetch("/api/generate-scene", {
@@ -64,7 +68,7 @@ export function useGenerationStream() {
           signal: abortRef.current.signal,
         });
 
-        if (!res.ok) throw new Error("Gagal membuat adegan");
+        if (!res.ok) throw new Error(await readErrorMessage(res, "Gagal membuat adegan"));
         if (!res.body) throw new Error("Respons server kosong");
 
         const reader = res.body.getReader();
@@ -100,18 +104,30 @@ export function useGenerationStream() {
                     break;
                   case "error":
                     updateScene(scene.id, { status: "error" });
+                    setGenerationError(data.message);
                     throw new Error(data.message);
                 }
               }
             }
           }
         }
+      } catch (error) {
+        if (!isAbortError(error)) {
+          setGenerationError(error instanceof Error ? error.message : "Gagal membuat adegan");
+        }
       } finally {
         setIsGenerating(false);
         setCurrentAgent("idle");
       }
     },
-    [setIsGenerating, setCurrentAgent, clearStreamContent, appendStreamContent, updateScene]
+    [
+      setIsGenerating,
+      setCurrentAgent,
+      clearStreamContent,
+      appendStreamContent,
+      updateScene,
+      setGenerationError,
+    ]
   );
 
   const generateFull = useCallback(
@@ -119,6 +135,7 @@ export function useGenerationStream() {
       abortRef.current = new AbortController();
       setIsGenerating(true);
       clearStreamContent();
+      setGenerationError(null);
 
       try {
         const res = await fetch("/api/generate", {
@@ -128,7 +145,7 @@ export function useGenerationStream() {
           signal: abortRef.current.signal,
         });
 
-        if (!res.ok) throw new Error("Gagal memulai pembuatan naskah");
+        if (!res.ok) throw new Error(await readErrorMessage(res, "Gagal memulai pembuatan naskah"));
         if (!res.body) throw new Error("Respons server kosong");
 
         const reader = res.body.getReader();
@@ -168,6 +185,9 @@ export function useGenerationStream() {
                   break;
                 case "scene-start":
                   clearStreamContent();
+                  if (data.sceneId) {
+                    updateScene(data.sceneId, { status: "generating" });
+                  }
                   break;
                 case "token":
                   appendStreamContent(data.content);
@@ -184,10 +204,15 @@ export function useGenerationStream() {
                   setStatus("complete");
                   break;
                 case "error":
+                  setGenerationError(data.message);
                   throw new Error(data.message);
               }
             }
           }
+        }
+      } catch (error) {
+        if (!isAbortError(error)) {
+          setGenerationError(error instanceof Error ? error.message : "Gagal membuat naskah");
         }
       } finally {
         setIsGenerating(false);
@@ -203,6 +228,7 @@ export function useGenerationStream() {
       setOutline,
       setProgress,
       updateScene,
+      setGenerationError,
     ]
   );
 
@@ -210,7 +236,21 @@ export function useGenerationStream() {
     abortRef.current?.abort();
     setIsGenerating(false);
     setCurrentAgent("idle");
-  }, [setIsGenerating, setCurrentAgent]);
+    setGenerationError(null);
+  }, [setIsGenerating, setCurrentAgent, setGenerationError]);
 
   return { generateOutline, generateScene, generateFull, abort };
+}
+
+async function readErrorMessage(res: Response, fallback: string) {
+  try {
+    const data = (await res.json()) as { error?: string };
+    return data.error || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
 }
